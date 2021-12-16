@@ -276,10 +276,10 @@ void addAxes(uint32_t* data, double xMin, double xMax, double yMin, double yMax)
     }
 }
 
-void plot_hull(int m, int n, double x[], double y[], int c[]) {
+bool plot_hull(int m, int n, double x[], double y[], int c[]) {
     if (m < 0 || n < 0) {
         printf("Error creating plot.\n");
-        return;
+        return false;
     }
 
     double xMin = x[0];
@@ -367,6 +367,8 @@ void plot_hull(int m, int n, double x[], double y[], int c[]) {
     addAxes(data, xMin, xMax, yMin, yMax);
 
     bmp_create("hull.bmp", data, W, H);
+
+    return true;
 }
 
 int main() {
@@ -376,29 +378,53 @@ int main() {
     double* x;
     double* y;
 
-    if (set_points(&n)) {
-        x = (double*) malloc(n * sizeof(double));
-        y = (double*) malloc(n * sizeof(double));
+    int m = 0;
+    int* c;
 
-        //read_points(n, x, y);
+    while (1) {
+        printf("\n1) Anzahl der Punkte festlegen\n2) Punkte von Tastatur einlesen\n3) Zufallspunkte erzeugen\n4) Eckpunkte der konvexen Huelle berechnen und ausgeben\n5) Konvexe Huelle als BMP-Datei ausgeben\n6) Programm beenden\n");
 
-        //print_points(n, x, y);
+        printf("\nIhre Eingabe: ");
+        int input;
+        char temp;
+        while (scanf("%i%c", &input, &temp) != 2 || temp != '\n') {
+            printf("Ungueltige Eingabe. Versuchen Sie es bitte erneut.\n");
+            printf("\nIhre Eingabe: ");
+        }
 
-        rand_points(n, x, y);
-
-        print_points(n, x, y);
-
-        /*
-        int i_start, i_switch;
-        switch_point(n, x, y, &i_start, &i_switch);
-        printf("%i, %i", i_start, i_switch);
-        */
-
-       int* c = (int*) malloc(n * sizeof(int));
-       int m = hull(n, x, y, c);
-
-       display_corners(m, x, y, c);
-
-       plot_hull(m, n, x, y, c);
+        if (input == 1) {
+            if (set_points(&n)) {
+                printf("Punktanzahl wurde erfolgreich gesetzt.\n");
+                x = (double*) malloc(n * sizeof(double));
+                y = (double*) malloc(n * sizeof(double));
+            }
+        }
+        else if (input == 2) {
+            if (read_points(n, x, y)) {
+                printf("Punkte wurden erfolgreich eingelesen.\n");
+            }
+        }
+        else if (input == 3) {
+            if (rand_points(n, x, y)) {
+                printf("Zufaellige Punkte wurden erfolgreich erzeugt.\n");
+            }
+        }
+        else if (input == 4) {
+            c = (int*) malloc(n * sizeof(int));
+            m = hull(n, x, y, c);
+            if (m != -1) {
+                display_corners(m, x, y, c);
+            }
+        }
+        else if (input == 5) {
+            c = (int*) malloc(n * sizeof(int));
+            m = hull(n, x, y, c);
+            if (plot_hull(m, n, x, y, c)) {
+                printf("BMP-Datei erfolgreich erstellt.");
+            }
+        }
+        else if (input == 6) {
+            return EXIT_SUCCESS;
+        }
     }
 }

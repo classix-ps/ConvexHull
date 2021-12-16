@@ -12,4 +12,4 @@ bool switch_point(int n, double x[], double y[], int* i_start, int* i_switch);
 
 int hull(int n, double x[], double y[], int c[]);
 
-void plot_hull(int m, int n, double x[], double y[], int c[]);
+bool plot_hull(int m, int n, double x[], double y[], int c[]);
